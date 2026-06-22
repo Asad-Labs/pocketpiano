@@ -2,285 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Premium Web Piano</title>
-    <style>
-        /* Basic Reset and Page Styling */
-        body {
-            background: radial-gradient(circle, #1a1a2e, #0f0f1e);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            color: #fff;
-            /* Add padding-top to prevent the sheet from covering the piano */
-            padding-top: 50px; 
-            box-sizing: border-box;
-        }
-
-        /* --- Music Sheet --- */
-        .music-sheet-container {
-            background-color: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            width: 90%;
-            max-width: 800px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            overflow: hidden;
-            /* Position it absolutely at the top */
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
-        }
-
-        .music-sheet-container.collapsed {
-            max-height: 60px;
-            padding-bottom: 0;
-        }
-        
-        .music-sheet-container:not(.collapsed) {
-            max-height: 400px; /* Adjust as needed */
-            padding-bottom: 20px;
-        }
-
-        .sheet-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .song-selector {
-            background-color: #333;
-            color: #fff;
-            border: 1px solid #555;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .toggle-sheet-button {
-            background: none;
-            border: none;
-            color: #ccc;
-            font-size: 20px;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .music-sheet-container.collapsed .toggle-sheet-button {
-            transform: rotate(180deg);
-        }
-
-        .sheet-content {
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        .staff {
-            position: relative;
-            height: 100px;
-            margin: 20px 0;
-        }
-        .staff-line {
-            position: absolute;
-            width: 100%;
-            border-top: 1px solid #aaa;
-        }
-        .note {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: #fff;
-            color: #111;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 12px;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transform: translateX(-50%); /* Center the note on its position */
-        }
-
-        /* --- Controls Panel --- */
-        .controls {
-            background-color: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            padding: 15px 30px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            margin-bottom: 40px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        }
-
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .control-group label {
-            font-size: 14px;
-            color: #ccc;
-            font-weight: 500;
-        }
-
-        /* Volume Slider Styling */
-        input[type="range"] {
-            -webkit-appearance: none;
-            width: 100px;
-            height: 5px;
-            border-radius: 5px;
-            background: #333;
-            outline: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: #fff;
-            cursor: pointer;
-        }
-
-        input[type="range"]::-moz-range-thumb {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: #fff;
-            cursor: pointer;
-        }
-        
-        /* Reverb Toggle Switch */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 24px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #333;
-            transition: .4s;
-            border-radius: 24px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #007bff;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
-        /* --- Piano --- */
-        .piano {
-            display: flex;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .key {
-            position: relative;
-            cursor: pointer;
-            user-select: none;
-            transition: transform 0.07s;
-        }
-
-        .white-key {
-            width: 50px;
-            height: 200px;
-            background: linear-gradient(to bottom, #fff, #f2f2f2);
-            border: 1px solid #ccc;
-            border-radius: 0 0 5px 5px;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
-        }
-
-        .white-key.active {
-            transform: translateY(2px);
-            box-shadow: 0 3px 5px rgba(0,0,0,0.3);
-        }
-
-        .black-key {
-            width: 35px;
-            height: 120px;
-            background: linear-gradient(to bottom, #333, #000);
-            border-radius: 0 0 3px 3px;
-            position: absolute;
-            z-index: 2;
-            margin-left: -17.5px;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.5);
-        }
-
-        .black-key.active {
-            transform: translateY(2px);
-            box-shadow: 0 3px 5px rgba(0,0,0,0.5);
-        }
-
-        /* --- Key Labels --- */
-        .key-label {
-            position: absolute;
-            bottom: 10px;
-            width: 100%;
-            text-align: center;
-            pointer-events: none;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .white-key .key-label {
-            color: rgba(0, 0, 0, 0.4);
-        }
-
-        .black-key .key-label {
-            color: rgba(255, 255, 255, 0.5);
-        }
-        
-        .instructions {
-            position: absolute;
-            bottom: 20px;
-            color: #aaa;
-            text-align: center;
-            font-size: 14px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -327,236 +51,47 @@
     </div>
 
     <div class="piano">
-        <!-- White Keys -->
-        <div class="key white-key" data-note="C4"><span class="key-label">C</span></div>
-        <div class="key white-key" data-note="D4"><span class="key-label">D</span></div>
-        <div class="key white-key" data-note="E4"><span class="key-label">E</span></div>
-        <div class="key white-key" data-note="F4"><span class="key-label">F</span></div>
-        <div class="key white-key" data-note="G4"><span class="key-label">G</span></div>
-        <div class="key white-key" data-note="A4"><span class="key-label">A</span></div>
-        <div class="key white-key" data-note="B4"><span class="key-label">B</span></div>
-        <div class="key white-key" data-note="C5"><span class="key-label">C</span></div>
+    <!-- White Keys (15 total, automatically stack side-by-side) -->
+    <div class="key white-key" data-note="C4"><span class="key-label">C4</span></div>
+    <div class="key white-key" data-note="D4"><span class="key-label">D4</span></div>
+    <div class="key white-key" data-note="E4"><span class="key-label">E4</span></div>
+    <div class="key white-key" data-note="F4"><span class="key-label">F4</span></div>
+    <div class="key white-key" data-note="G4"><span class="key-label">G4</span></div>
+    <div class="key white-key" data-note="A4"><span class="key-label">A4</span></div>
+    <div class="key white-key" data-note="B4"><span class="key-label">B4</span></div>
+    <div class="key white-key" data-note="C5"><span class="key-label">C5</span></div>
+    <div class="key white-key" data-note="D5"><span class="key-label">D5</span></div>
+    <div class="key white-key" data-note="E5"><span class="key-label">E5</span></div>
+    <div class="key white-key" data-note="F5"><span class="key-label">F5</span></div>
+    <div class="key white-key" data-note="G5"><span class="key-label">G5</span></div>
+    <div class="key white-key" data-note="A5"><span class="key-label">A5</span></div>
+    <div class="key white-key" data-note="B5"><span class="key-label">B5</span></div>
+    <div class="key white-key" data-note="C6"><span class="key-label">C6</span></div>
 
-        <!-- Black Keys -->
-        <div class="key black-key" data-note="C#4" style="left: 35px;"><span class="key-label">C#</span></div>
-        <div class="key black-key" data-note="D#4" style="left: 85px;"><span class="key-label">D#</span></div>
-        <div class="key black-key" data-note="F#4" style="left: 185px;"><span class="key-label">F#</span></div>
-        <div class="key black-key" data-note="G#4" style="left: 235px;"><span class="key-label">G#</span></div>
-        <div class="key black-key" data-note="A#4" style="left: 285px;"><span class="key-label">A#</span></div>
-    </div>
+    <!-- Black Keys (11 total, meticulously positioned) -->
+    <!-- Octave 4 -->
+    <div class="key black-key" data-note="C#4" style="left: 35px;"><span class="key-label">C#4</span></div>
+    <div class="key black-key" data-note="D#4" style="left: 85px;"><span class="key-label">D#4</span></div>
+    <!-- Skip between E and F -->
+    <div class="key black-key" data-note="F#4" style="left: 188px;"><span class="key-label">F#4</span></div>
+    <div class="key black-key" data-note="G#4" style="left: 239px;"><span class="key-label">G#4</span></div>
+    <div class="key black-key" data-note="A#4" style="left: 290px;"><span class="key-label">A#4</span></div>
+    <!-- Skip between B and C -->
+
+    <!-- Octave 5 -->
+    <div class="key black-key" data-note="C#5" style="left: 393px;"><span class="key-label">C#5</span></div>
+    <div class="key black-key" data-note="D#5" style="left: 444px;"><span class="key-label">D#5</span></div>
+    <!-- Skip between E and F -->
+    <div class="key black-key" data-note="F#5" style="left: 547px;"><span class="key-label">F#5</span></div>
+    <div class="key black-key" data-note="G#5" style="left: 599px;"><span class="key-label">G#5</span></div>
+    <div class="key black-key" data-note="A#5" style="left: 650px;"><span class="key-label">A#5</span></div>
+    <div class="key black-key" data-note="C#6" style="left: 753px;"><span class="key-label">C#6</span></div>
+</div>
+
 
     <div class="instructions">
         Use your mouse to click the keys or use your keyboard (A-K for white keys, W-E-T-Y-U for black keys)
     </div>
-
-    <script>
-        // --- AUDIO SETUP ---
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // Master Gain Node for overall volume
-        const masterGainNode = audioContext.createGain();
-        masterGainNode.connect(audioContext.destination);
-        masterGainNode.gain.value = 0.3;
-
-        // --- REVERB SETUP ---
-        const convolver = audioContext.createConvolver();
-        const wetGain = audioContext.createGain();
-        const dryGain = audioContext.createGain();
-
-        function createReverbImpulse(duration, decay) {
-            const length = audioContext.sampleRate * duration;
-            const impulse = audioContext.createBuffer(2, length, audioContext.sampleRate);
-            
-            for (let channel = 0; channel < 2; channel++) {
-                const channelData = impulse.getChannelData(channel);
-                for (let i = 0; i < length; i++) {
-                    channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
-                }
-            }
-            return impulse;
-        }
-        convolver.buffer = createReverbImpulse(2, 2);
-        
-        wetGain.connect(convolver);
-        convolver.connect(audioContext.destination);
-        wetGain.gain.value = 0.5;
-
-        dryGain.connect(audioContext.destination);
-        dryGain.gain.value = 0.7;
-
-        // --- NOTES AND KEYBOARD MAPPING ---
-        const noteFrequencies = {
-            "C4": 261.63, "C#4": 277.18, "D4": 293.66, "D#4": 311.13,
-            "E4": 329.63, "F4": 349.23, "F#4": 369.99, "G4": 392.00,
-            "G#4": 415.30, "A4": 440.00, "A#4": 466.16, "B4": 493.88, "C5": 523.25
-        };
-        const keyboardMap = {
-            'a': 'C4', 'w': 'C#4', 's': 'D4', 'e': 'D#4', 'd': 'E4',
-            'f': 'F4', 't': 'F#4', 'g': 'G4', 'y': 'G#4', 'h': 'A4',
-            'u': 'A#4', 'j': 'B4', 'k': 'C5',
-        };
-
-        // --- MUSIC SHEET DATA & LOGIC ---
-        const songsData = {
-            "twinkle": { title: "Twinkle Twinkle Little Star", notes: ["C4", "C4", "G4", "G4", "A4", "A4", "G4", "F4", "F4", "E4", "E4", "D4", "D4", "C4"] },
-            "happy-birthday": { title: "Happy Birthday", notes: ["C4", "C4", "D4", "C4", "F4", "E4", "C4", "C4", "D4", "C4", "G4", "F4"] },
-            "c-major": { title: "C Major Scale", notes: ["C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5"] },
-            "ode-to-joy": { title: "Ode to Joy", notes: ["E4", "E4", "F4", "G4", "G4", "F4", "E4", "D4", "C4", "C4", "D4", "E4", "E4", "D4", "D4"] },
-            "fur-elise": { title: "Für Elise (Intro)", notes: ["E4", "D#4", "E4", "D#4", "E4", "B4", "D4", "C4", "A4"] },
-            "jingle-bells": { title: "Jingle Bells", notes: ["E4", "E4", "E4", "E4", "E4", "E4", "E4", "G4", "C4", "D4", "E4"] },
-            "mary-lamb": { title: "Mary Had a Little Lamb", notes: ["E4", "D4", "C4", "D4", "E4", "E4", "E4", "D4", "D4", "D4", "E4", "G4", "G4"] },
-            "hot-cross-buns": { title: "Hot Cross Buns", notes: ["E4", "D4", "C4", "E4", "D4", "C4", "C4", "C4", "C4", "D4", "D4", "D4", "E4", "E4", "E4"] },
-            "let-it-go": { title: "Let It Go (Chorus)", notes: ["C4", "C4", "B4", "A4", "G4", "A4", "B4", "C4", "B4", "A4", "G4", "A4"] },
-            "hedwig-theme": { title: "Hedwig's Theme", notes: ["E4", "G4", "E4", "F4", "E4", "D4", "C4", "E4", "G4", "E4", "F4", "E4", "D4"] }
-        };
-        
-        // Map notes to vertical positions on the staff
-        const notePositions = {
-            "C4": 95, "D4": 87, "E4": 80, "F4": 72, "G4": 65, "A4": 57, "B4": 50, "C5": 42
-        };
-
-        const songSelector = document.getElementById('song-selector');
-        const staff = document.getElementById('staff');
-        const musicSheetContainer = document.getElementById('music-sheet-container');
-        const toggleSheetButton = document.getElementById('toggle-sheet-button');
-
-        function displaySheetMusic(songKey) {
-            const oldNotes = staff.querySelectorAll('.note');
-            oldNotes.forEach(note => note.remove());
-
-            const song = songsData[songKey];
-            if (!song) return;
-
-            song.notes.forEach((note, index) => {
-                const noteElement = document.createElement('div');
-                noteElement.classList.add('note');
-                noteElement.textContent = note.replace('4', '').replace('5', "'");
-                
-                noteElement.style.top = notePositions[note] + 'px';
-                noteElement.style.left = (50 + index * 45) + 'px';
-
-                staff.appendChild(noteElement);
-            });
-        }
-
-        // --- EVENT LISTENERS ---
-
-        // Music Sheet Listeners
-        toggleSheetButton.addEventListener('click', () => {
-            musicSheetContainer.classList.toggle('collapsed');
-        });
-
-        songSelector.addEventListener('change', (e) => {
-            displaySheetMusic(e.target.value);
-        });
-
-        // Initial load of the first song
-        displaySheetMusic('twinkle');
-
-        // --- PIANO FUNCTIONALITY (No changes needed here) ---
-
-        function playNote(key) {
-            if (audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-
-            const note = key.dataset.note;
-            const frequency = noteFrequencies[note];
-            if (!frequency) return;
-
-            key.classList.add('active');
-            key.sounding = true;
-
-            const now = audioContext.currentTime;
-            
-            const noteGain = audioContext.createGain();
-            
-            const osc1 = audioContext.createOscillator();
-            osc1.frequency.setValueAtTime(frequency, now);
-            osc1.connect(noteGain);
-            
-            const osc2 = audioContext.createOscillator();
-            osc2.frequency.setValueAtTime(frequency * 2, now);
-            osc2.connect(noteGain);
-            
-            const osc3 = audioContext.createOscillator();
-            osc3.frequency.setValueAtTime(frequency * 3, now);
-            osc3.connect(noteGain);
-
-            noteGain.gain.setValueAtTime(0, now);
-            noteGain.gain.linearRampToValueAtTime(0.4, now + 0.01);
-            noteGain.gain.exponentialRampToValueAtTime(0.2, now + 0.1);
-            noteGain.gain.exponentialRampToValueAtTime(0.00001, now + 1.5);
-
-            noteGain.connect(masterGainNode);
-            noteGain.connect(dryGain);
-            noteGain.connect(wetGain);
-
-            osc1.start(now);
-            osc2.start(now);
-            osc3.start(now);
-            
-            key.oscillators = [osc1, osc2, osc3];
-            key.noteGain = noteGain;
-        }
-
-        function stopNote(key) {
-            key.classList.remove('active');
-            if (!key.sounding) return;
-            key.sounding = false;
-
-            if (key.noteGain) {
-                const now = audioContext.currentTime;
-                key.noteGain.gain.cancelScheduledValues(now);
-                key.noteGain.gain.setValueAtTime(key.noteGain.gain.value, now);
-                key.noteGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.5);
-            }
-        }
-
-        const keys = document.querySelectorAll('.key');
-
-        keys.forEach(key => {
-            key.addEventListener('mousedown', () => {
-                if (!key.sounding) playNote(key);
-            });
-            key.addEventListener('mouseup', () => stopNote(key));
-            key.addEventListener('mouseleave', () => stopNote(key));
-            key.addEventListener('touchstart', (e) => { e.preventDefault(); if (!key.sounding) playNote(key); });
-            key.addEventListener('touchend', (e) => { e.preventDefault(); stopNote(key); });
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.repeat) return;
-            const key = e.key.toLowerCase();
-            if (keyboardMap[key]) {
-                const noteElement = document.querySelector(`[data-note="${keyboardMap[key]}"]`);
-                if (noteElement && !noteElement.sounding) playNote(noteElement);
-            }
-        });
-
-        document.addEventListener('keyup', (e) => {
-            const key = e.key.toLowerCase();
-            if (keyboardMap[key]) {
-                const noteElement = document.querySelector(`[data-note="${keyboardMap[key]}"]`);
-                if (noteElement) stopNote(noteElement);
-            }
-        });
-
-        const volumeSlider = document.getElementById('volume-slider');
-        volumeSlider.addEventListener('input', (e) => {
-            masterGainNode.gain.value = e.target.value / 100;
-        });
-
-        const reverbToggle = document.getElementById('reverb-toggle');
-        reverbToggle.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                wetGain.gain.linearRampToValueAtTime(0.5, audioContext.currentTime + 0.1);
-                dryGain.gain.linearRampToValueAtTime(0.7, audioContext.currentTime + 0.1);
-            } else {
-                wetGain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.1);
-                dryGain.gain.linearRampToValueAtTime(1, audioContext.currentTime + 0.1);
-            }
-        });
-    </script>
+<script src="script.js"></script>
 </body>
 </html>

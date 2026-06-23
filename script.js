@@ -332,4 +332,14 @@
         window.addEventListener('mousedown', triggerMobileImmersiveMode, { once: true });
         window.addEventListener('touchstart', triggerMobileImmersiveMode, { once: true });
 
+                         // Register the PWA service worker safely
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('PWA Service Worker Loaded successfully!'))
+                    .catch(err => console.log('Service Worker failed: ', err));
+            });
+        }
+
+
         });

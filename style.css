@@ -281,18 +281,45 @@
             transform: translateY(1px);
         }
 
+                /* --- HIGH PRECISION BLACK KEY LAYOUT ENGINE --- */
         .black-key {
-            width: 32px;
-            height: 130px;
+            /* Width calculation matches the underlying 15 white keys framework */
+            width: calc(100% / 15 * 0.62); 
+            height: 60%;
             background: linear-gradient(to bottom, #333 0%, #000 100%);
             border-radius: 0 0 4px 4px;
             position: absolute;
             z-index: 5;
-            margin-left: -16px; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.5);
             box-sizing: border-box;
+            
+            /* REMOVED: The generic translation that was throwing off the right end */
+            transform: none; 
         }
 
+        /* --- THE INDIVIDUAL POSITIONING OFFSETS --- */
+        /* Each class name matches the specific notes in your keyboardMap */
+        
+        /* Octave 4 Clusters */
+        .key.C\#4  { left: calc(100% / 15 * 1  - (100% / 15 * 0.31)); }
+        .key.D\#4  { left: calc(100% / 15 * 2  - (100% / 15 * 0.23)); }
+        
+        .key.F\#4  { left: calc(100% / 15 * 4  - (100% / 15 * 0.34)); }
+        .key.G\#4  { left: calc(100% / 15 * 5  - (100% / 15 * 0.28)); }
+        .key.A\#4  { left: calc(100% / 15 * 6  - (100% / 15 * 0.22)); }
+
+        /* Octave 5 Clusters */
+        .key.C\#5  { left: calc(100% / 15 * 8  - (100% / 15 * 0.31)); }
+        .key.D\#5  { left: calc(100% / 15 * 9  - (100% / 15 * 0.23)); }
+        
+        .key.F\#5  { left: calc(100% / 15 * 11 - (100% / 15 * 0.34)); }
+        .key.G\#5  { left: calc(100% / 15 * 12 - (100% / 15 * 0.28)); }
+        .key.A\#5  { left: calc(100% / 15 * 13 - (100% / 15 * 0.22)); }
+
+        /* Octave 6 End Cluster */
+        .key.C\#6  { left: calc(100% / 15 * 15 - (100% / 15 * 0.31)); }
+
+        /* Visual response state */
         .black-key.active {
             background: linear-gradient(to bottom, #555 0%, #1a1a1a 100%);
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);

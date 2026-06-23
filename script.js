@@ -309,4 +309,32 @@
             }, { passive: false });
         }
 
+                // --- AUTO-LANDSCAPE & FULLSCREEN FORCE LOGIC FOR MOBILE DEVICES ---
+
+        function unlockMobileLandscape() {
+            // Check if device is a mobile phone/tablet layout
+            if (window.innerWidth <= 900) {
+                const docEl = document.documentElement;
+
+                // 1. Request Fullscreen Mode (Removes phone browser address bars)
+                if (docEl.requestFullscreen) { docEl.requestFullscreen(); }
+                else if (docEl.webkitRequestFullscreen) { docEl.webkitRequestFullscreen(); }
+                else if (docEl.msRequestFullscreen) { docEl.msRequestFullscreen(); }
+
+                // 2. Lock screen orientation directly into Landscape view
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch((err) => {
+                        console.log("Orientation lock setup requires user interaction profile: ", err);
+                    });
+                } else if (screen.lockOrientation) {
+                    screen.lockOrientation('landscape');
+                }
+            }
+        }
+
+        // Trigger the switch on the very first tap or click anywhere on the interface
+        window.addEventListener('click', unlockMobileLandscape, { once: true });
+        window.addEventListener('touchstart', unlockMobileLandscape, { once: true });
+
+
         });

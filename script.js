@@ -309,32 +309,27 @@
             }, { passive: false });
         }
 
-                // --- AUTO-LANDSCAPE & FULLSCREEN FORCE LOGIC FOR MOBILE DEVICES ---
+                        // --- MOBILE IMMERSIVE ENGINE ---
 
-        function unlockMobileLandscape() {
-            // Check if device is a mobile phone/tablet layout
-            if (window.innerWidth <= 900) {
-                const docEl = document.documentElement;
+        function triggerMobileImmersiveMode() {
+            // Target only mobile touchscreen devices
+            if (window.matchMedia("(pointer: coarse)").matches) {
+                const docElement = document.documentElement;
 
-                // 1. Request Fullscreen Mode (Removes phone browser address bars)
-                if (docEl.requestFullscreen) { docEl.requestFullscreen(); }
-                else if (docEl.webkitRequestFullscreen) { docEl.webkitRequestFullscreen(); }
-                else if (docEl.msRequestFullscreen) { docEl.msRequestFullscreen(); }
+                // Request Fullscreen instantly upon their first key touch
+                if (docElement.requestFullscreen) { docElement.requestFullscreen(); }
+                else if (docElement.webkitRequestFullscreen) { docElement.webkitRequestFullscreen(); }
+                else if (docElement.msRequestFullscreen) { docElement.msRequestFullscreen(); }
 
-                // 2. Lock screen orientation directly into Landscape view
+                // Attempt hardware orientation flip if device rules allow it
                 if (screen.orientation && screen.orientation.lock) {
-                    screen.orientation.lock('landscape').catch((err) => {
-                        console.log("Orientation lock setup requires user interaction profile: ", err);
-                    });
-                } else if (screen.lockOrientation) {
-                    screen.lockOrientation('landscape');
+                    screen.orientation.lock('landscape').catch(() => {});
                 }
             }
         }
 
-        // Trigger the switch on the very first tap or click anywhere on the interface
-        window.addEventListener('click', unlockMobileLandscape, { once: true });
-        window.addEventListener('touchstart', unlockMobileLandscape, { once: true });
-
+        // Listens globally for their very first interaction to activate fullscreen smoothly
+        window.addEventListener('mousedown', triggerMobileImmersiveMode, { once: true });
+        window.addEventListener('touchstart', triggerMobileImmersiveMode, { once: true });
 
         });

@@ -1,0 +1,17 @@
+{
+  "short_name": "WebPiano",
+  "name": "Realistic Web Piano",
+  "icons": [
+    {
+      "src": "https://flaticon.com",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "background_color": "#0f0f1e",
+  "theme_color": "#0f0f1e",
+  "display": "standalone",
+  "orientation": "landscape"
+}

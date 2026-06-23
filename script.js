@@ -247,4 +247,66 @@
                     stopNote(keyElement);
                 }
             }
+
+                    // --- MOBILE TOUCH GLISSANDO TRACKER ---
+        // This acts completely independently and will not affect mouse/keyboard mechanics.
+
+        let mobileTrackedKey = null;
+        const pianoElement = document.querySelector('.piano');
+
+        if (pianoElement) {
+            function processGlissandoTouch(e) {
+                // Prevent mobile pull-to-refresh or page scrolling while sliding on the piano
+                if (e.cancelable) e.preventDefault();
+                
+                // Target the first active touch point safely
+                if (!e.touches || e.touches.length === 0) return;
+                const activeTouch = e.touches[0];
+
+                // Map coordinates to the DOM element beneath the finger
+                const elementUnderFinger = document.elementFromPoint(activeTouch.clientX, activeTouch.clientY);
+                if (!elementUnderFinger) return;
+
+                // Capture the key container even if hovering over labels
+                const targetKey = elementUnderFinger.closest('.key');
+
+                // If the user slides onto a brand new note
+                if (targetKey !== mobileTrackedKey) {
+                    // Turn off the note they just left behind
+                    if (mobileTrackedKey) {
+                        stopNote(mobileTrackedKey);
+                    }
+                    
+                    // Fire the note they just entered
+                    if (targetKey) {
+                        if (!targetKey.sounding) {
+                            playNote(targetKey);
+                        }
+                    }
+                    
+                    mobileTrackedKey = targetKey;
+                }
+            }
+
+            // Bind listeners directly to the container matrix with passive override
+            pianoElement.addEventListener('touchstart', processGlissandoTouch, { passive: false });
+            pianoElement.addEventListener('touchmove', processGlissandoTouch, { passive: false });
+
+            // Graceful clear when touch lifts or crashes
+            pianoElement.addEventListener('touchend', (e) => {
+                if (e.cancelable) e.preventDefault();
+                if (mobileTrackedKey) {
+                    stopNote(mobileTrackedKey);
+                    mobileTrackedKey = null;
+                }
+            }, { passive: false });
+
+            pianoElement.addEventListener('touchcancel', (e) => {
+                if (mobileTrackedKey) {
+                    stopNote(mobileTrackedKey);
+                    mobileTrackedKey = null;
+                }
+            }, { passive: false });
+        }
+
         });

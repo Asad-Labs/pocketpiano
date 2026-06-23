@@ -199,51 +199,24 @@
             key.addEventListener('mouseup', () => stopNote(key));
             key.addEventListener('mouseleave', () => stopNote(key));
 
-                   // ========================================================
-        // PASTE THE NEW MOBILE TOUCH GLISSANDO LOGIC CODE HERE:
-        // ========================================================
-        let lastTouchedKey = null;
-        const pianoContainer = document.querySelector('.piano');
+            // MOBILE: Hardware Accelerated Touch Mechanics
+            // passive: false allows us to cancel scrolling behavior while executing rapid taps
+            key.addEventListener('touchstart', (e) => { 
+                e.preventDefault(); 
+                if (!key.sounding) playNote(key); 
+            }, { passive: false });
 
-        function handleTouchMove(e) {
-            e.preventDefault();
-            const touch = e.touches[0];
-            if (!touch) return;
+            key.addEventListener('touchend', (e) => { 
+                e.preventDefault(); 
+                stopNote(key); 
+            }, { passive: false });
+            
+            key.addEventListener('touchcancel', (e) => { 
+                e.preventDefault(); 
+                stopNote(key); 
+            }, { passive: false });
+        });
 
-            const element = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (!element) return;
-
-            const keyElement = element.closest('.key');
-
-            if (keyElement !== lastTouchedKey) {
-                if (lastTouchedKey) {
-                    stopNote(lastTouchedKey);
-                }
-                if (keyElement) {
-                    if (!keyElement.sounding) {
-                        playNote(keyElement);
-                    }
-                }
-                lastTouchedKey = keyElement;
-            }
-        }
-
-        pianoContainer.addEventListener('touchstart', handleTouchMove, { passive: false });
-        pianoContainer.addEventListener('touchmove', handleTouchMove, { passive: false });
-        pianoContainer.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            if (lastTouchedKey) {
-                stopNote(lastTouchedKey);
-                lastTouchedKey = null;
-            }
-        }, { passive: false });
-        pianoContainer.addEventListener('touchcancel', (e) => {
-            e.preventDefault();
-            if (lastTouchedKey) {
-                stopNote(lastTouchedKey);
-                lastTouchedKey = null;
-            }
-        }, { passive: false });
 
                     // --- COMPUTER KEYBOARD EVENT LISTENERS ---
 

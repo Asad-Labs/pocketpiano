@@ -42,7 +42,7 @@
                 /* 1. Flips the canvas 90 degrees so it maps horizontally on a vertical screen */
                 --rotate-angle: 90deg;
                 /* 2. Shrinks your layout uniformly to fit the canvas safely */
-                --scale-factor: 0.50; 
+                --scale-factor: 0.75; 
                 /* 3. Inverts boundaries so width fits the phone's height aspect ratio */
                 --container-width: 100vh;
                 --container-height: 100vw;

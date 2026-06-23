@@ -1,7 +1,9 @@
         /* --- CORE CONFIGURATION & RESET --- */
         :root {
-            /* Desktop/Laptop defaults to normal 100% scale size */
             --scale-factor: 1;
+            --rotate-angle: 0deg;
+            --container-width: 100vw;
+            --container-height: 100vh;
         }
 
         body {
@@ -15,33 +17,48 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             color: #fff;
             box-sizing: border-box;
-            overflow: hidden; /* Prevents unwanted bounce-scrolling on mobile */
+            overflow: hidden; 
             padding: 20px;
         }
 
-        /* Wrap everything in a master scaler container */
+        /* The master framework container */
         .app-scaler {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            max-width: 1100px;
-            /* Uniform scaling engine simulating your 50% browser zoom test */
-            transform: scale(var(--scale-factor));
+            width: var(--container-width);
+            height: var(--container-height);
+            /* Uniform scaling engine simulating your exact 50% browser zoom test */
+            transform: rotate(var(--rotate-angle)) scale(var(--scale-factor));
             transform-origin: center center;
-            transition: transform 0.2s ease;
+            transition: transform 0.1s ease;
         }
 
-        /* --- SCENARIO 2: THE MOBILE LANDSCAPE OVERRIDE --- */
-        /* Targets mobile screens, touchscreen devices, or vertical viewports */
-        @media (max-width: 900px), (max-height: 600px) {
+        /* --- SCENARIO 2: SMARTPHONE FALLBACK MECHANICS --- */
+        /* Detects mobile phones using touch capabilities alongside narrow dimensions */
+        @media (max-width: 480px) and (orientation: portrait), (pointer: coarse) and (max-width: 900px) and (orientation: portrait) {
             :root {
-                /* Forces a clean, uniform 50% reduction to perfectly fit smartphone frames */
-                --scale-factor: 0.55; 
+                /* 1. Flips the canvas 90 degrees so it maps horizontally on a vertical screen */
+                --rotate-angle: 90deg;
+                /* 2. Shrinks your layout uniformly to fit the canvas safely */
+                --scale-factor: 0.50; 
+                /* 3. Inverts boundaries so width fits the phone's height aspect ratio */
+                --container-width: 100vh;
+                --container-height: 100vw;
             }
             body {
-                padding: 5px;
+                padding: 0;
+            }
+        }
+
+        /* If the mobile user manually rotates their phone sideways into true landscape: */
+        @media (pointer: coarse) and (max-width: 950px) and (orientation: landscape) {
+            :root {
+                --rotate-angle: 0deg;
+                --scale-factor: 0.55;
+                --container-width: 100vw;
+                --container-height: 100vh;
             }
         }
 
@@ -230,7 +247,7 @@
         .piano {
             display: flex;
             position: relative;
-            width: 750px; /* Locked standard sizing for true desktop piano representation */
+            width: 750px; /* Locked standard size for desktop view */
             height: 220px;
             box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
             background: #111;
@@ -248,7 +265,7 @@
         }
 
         .white-key {
-            width: 50px; /* Explicit size logic prevents horizontal squishing bugs */
+            width: 50px; 
             height: 100%;
             background: linear-gradient(to bottom, #fff 0%, #f4f4f4 100%);
             border: 1px solid #bbb;
@@ -271,7 +288,7 @@
             border-radius: 0 0 4px 4px;
             position: absolute;
             z-index: 5;
-            margin-left: -16px; /* Perfect overlap mapping formula */
+            margin-left: -16px; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.5);
             box-sizing: border-box;
         }

@@ -341,5 +341,10 @@
             });
         }
 
+                         // Prevents browser drag-to-refresh or navigation bounce-back anomalies on mobile touches
+        document.body.addEventListener('touchmove', function(e) {
+            if (e.cancelable) e.preventDefault();
+        }, { passive: false });
+
 
         });

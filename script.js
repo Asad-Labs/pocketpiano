@@ -309,42 +309,4 @@
             }, { passive: false });
         }
 
-                        // --- MOBILE IMMERSIVE ENGINE ---
-
-        function triggerMobileImmersiveMode() {
-            // Target only mobile touchscreen devices
-            if (window.matchMedia("(pointer: coarse)").matches) {
-                const docElement = document.documentElement;
-
-                // Request Fullscreen instantly upon their first key touch
-                if (docElement.requestFullscreen) { docElement.requestFullscreen(); }
-                else if (docElement.webkitRequestFullscreen) { docElement.webkitRequestFullscreen(); }
-                else if (docElement.msRequestFullscreen) { docElement.msRequestFullscreen(); }
-
-                // Attempt hardware orientation flip if device rules allow it
-                if (screen.orientation && screen.orientation.lock) {
-                    screen.orientation.lock('landscape').catch(() => {});
-                }
-            }
-        }
-
-        // Listens globally for their very first interaction to activate fullscreen smoothly
-        window.addEventListener('mousedown', triggerMobileImmersiveMode, { once: true });
-        window.addEventListener('touchstart', triggerMobileImmersiveMode, { once: true });
-
-                         // Register the PWA service worker safely
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('PWA Service Worker Loaded successfully!'))
-                    .catch(err => console.log('Service Worker failed: ', err));
-            });
-        }
-
-                         // Prevents browser drag-to-refresh or navigation bounce-back anomalies on mobile touches
-        document.body.addEventListener('touchmove', function(e) {
-            if (e.cancelable) e.preventDefault();
-        }, { passive: false });
-
-
         });

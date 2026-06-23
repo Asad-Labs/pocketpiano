@@ -9,7 +9,8 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "/pocketpiano/",
+  "scope": "/pocketpiano/",
   "background_color": "#0f0f1e",
   "theme_color": "#0f0f1e",
   "display": "standalone",
